@@ -1,11 +1,10 @@
 import {View, Text} from 'react-native';
 import React from 'react';
+import ImagePixels from './src/components/ImagePixels';
 
 const App = () => {
   return (
-    <View>
-      <Text>App</Text>
-    </View>
+    <ImagePixels />
   );
 };
 
