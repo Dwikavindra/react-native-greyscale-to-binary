@@ -29,6 +29,7 @@ const ImagePixels = () => {
           mime: image.data,
         });
         setImages(null);
+        PixelsImage.createBinaryPixels(image.path);
       })
       .catch(e => alert(e));
   };
@@ -49,6 +50,7 @@ const ImagePixels = () => {
           height: image.height,
         });
         setImages(null);
+        PixelsImage.createBinaryPixels(image.path);
       })
       .catch(e => alert(e));
   };
@@ -59,7 +61,7 @@ const ImagePixels = () => {
 
   
   function testFunction() {
-    PixelsImage.createBinaryPixels('testName', 'testLocation');
+    PixelsImage.createBinaryPixels(image.path);
     console.log("goooooooooodddddddd");
   }
 
@@ -102,7 +104,7 @@ const ImagePixels = () => {
           padding: 10,
           borderRadius: 20,
           textAlign: 'center'
-        }} onPress={() => pickSingleBase64()}>clique</Text>
+        }} onPress={() => pickSingleBase64()}>take image</Text>
       </View>
     </View>
   );
