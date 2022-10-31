@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import java.io.File;
 import java.io.EOFException;
@@ -30,9 +31,10 @@ public class PixelsImage extends ReactContextBaseJavaModule {
 //    int w = bitmap.getWidth();
 //    int h = bitmap.getHeight();
       Uri getPath;
-      double red = 100;
-      double green = 150;
-      double blue = 200;
+      int alpha = 255;
+      int red = 100;
+      int green = 150;
+      int blue = 200;
 
 
 
@@ -42,39 +44,47 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         return "PixelsImage";
     }
 
-    @ReactMethod
-    public void decodeSampledBitmapFromResource(String img ) {
-        String uri = "https://www.referenseo.com/wp-content/uploads/2019/03/image-attractive.jpg";
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        options.inSampleSize = 2;
-        options.inScreenDensity = DisplayMetrics.DENSITY_LOW;
-        File test = new File(uri);
-        Bitmap IMG = BitmapFactory.decodeFile(String.valueOf(test), options);
-        if(IMG == null){
-            System.out.println("File est null");
-        }else{
-            System.out.println("file différent de null");
-        }
-        System.out.println("Voir image "+  IMG);
-
-//        Bitmap bitmap =
-    }
+//    @ReactMethod
+//    public void decodeSampledBitmapFromResource(String img ) {
+//        String uri = "https://www.referenseo.com/wp-content/uploads/2019/03/image-attractive.jpg";
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//        options.inSampleSize = 2;
+//        options.inScreenDensity = DisplayMetrics.DENSITY_LOW;
+//        File test = new File(uri);
+//        Bitmap IMG = BitmapFactory.decodeFile(String.valueOf(test), options);
+//        if(IMG == null){
+//            System.out.println("File est null");
+//        }else{
+//            System.out.println("file différent de null");
+//        }
+//        System.out.println("Voir image "+  IMG);
+//
+////        Bitmap bitmap =
+//    }
 
 //            decodeSampledBitmapFromResource
+
     @ReactMethod
     private Bitmap createBinaryPixels(String url) {
-        red = (double) red / 100;
-        green = (double) green / 100;
-        blue = (double) blue / 100;
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(url, options);
         options.inJustDecodeBounds = false;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
+        File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
+        if(!(imgFile==null)){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath() + "/assets/g.png");
+//            myImage.setImageBitmap(myBitmap);
+            System.out.println("mon chemin" + myBitmap);
+        }
+        else {
+//            myImage.setImageResource(R.drawable.ic_launcher_background);
+            System.out.println("mon chemin introuvable");
+        }
 
         Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);
 
@@ -96,6 +106,10 @@ public class PixelsImage extends ReactContextBaseJavaModule {
                 R = (int)(Color.red(pixel) * red);
                 G = (int)(Color.green(pixel) * green);
                 B = (int)(Color.blue(pixel) * blue);
+
+                //average calcul
+                int avg = (R+G+B) / 3;
+
                 // set new color pixel to output bitmap
                 bmOut.setPixel(x, y, Color.argb(A, R, G, B));
             }
