@@ -2,39 +2,36 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 /* eslint-disable no-dupe-keys */
-import {View, Text, Image, FlatList, StyleSheet} from 'react-native';
+import {View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import PixelsImage from '../../PixelsImage';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
 
+const start_width = Dimensions.get('screen').width;
+const start_height = Dimensions.get('screen').height;
+
 const ImagePixels = () => {
   const [image, setImage] = useState(null);
   const [images, setImages] = useState(null);
-  const [downloadsFolder, setDownloadsFolder] = useState('');
-  const [documentsFolder, setDocumentsFolder] = useState();
-  const [externalDirectory, setExternalDirectory] = useState('');
-  const folderPath = RNFS.DownloadDirectoryPath + '/assets';
-  const [files, setFiles] = useState([]);
 
-  const getImageName = async () =>{
-    console.log(typeof (image));
-    console.log('first------111111----', image);
-    console.log('first------IMAGE----', documentsFolder);
-  };
-  const getFileContent = async (path) => {
-    const reader = await RNFS.readDir(path);
-    setFiles(reader);
-  };
+  //Getting file paths
+  const [downloadsFolder, setDownloadsFolder] = useState('');
+  const [documentsFolder, setDocumentsFolder] = useState('');
+  const [externalDirectory, setExternalDirectory] = useState('');
+
+  //get user's file paths from react-native-fs
   useEffect(() => {
-    getFileContent(RNFS.DownloadDirectoryPath + '/assets'); //run the function on the first render.
-    getImageName();
+    setDownloadsFolder(RNFS.DownloadDirectoryPath);
+    setDocumentsFolder(RNFS.DocumentDirectoryPath); //alternative to MainBundleDirectory.
+    setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
   }, []);
 
-  const makeDirectory = async (folderPath) => {
-    await RNFS.mkdir(folderPath); //create a new folder on folderPath
-  };
+  useEffect(() => {
+    getFileContent(RNFS.DownloadDirectoryPath + '/assets'); //run the function on the first render.
+  }, []);
 
+  //this component will render our list item to the UI
   const Item = ({ name, isFile }) => {
     return (
       <View>
@@ -46,7 +43,9 @@ const ImagePixels = () => {
 
   const renderItem = ({ item, index }) => {
     return (
-      <View>
+      <View style={{
+        padding: 10,
+      }}>
         <Text style={styles.title}>{index}</Text>
         {/* The isFile method indicates whether the scanned content is a file or a folder*/}
         <Item name={item.name} isFile={item.isFile()} />
@@ -54,19 +53,12 @@ const ImagePixels = () => {
     );
   };
 
-  useEffect(() => {
-    //get user's file paths from react-native-fs
-    setDownloadsFolder(RNFS.DownloadDirectoryPath);
-    const gg = RNFS.DocumentDirectoryPath + '/Pictures/';
-    setDocumentsFolder(gg); //alternative to MainBundleDirectory.
-    setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
-  }, []);
-
-  useEffect(() => {
-    makeDirectory(folderPath); //execute this function on first mount
-    const readDirectory = RNFS.DownloadDirectoryPath + '/assets';
-    getFileContent(readDirectory); //this function was defined in the previous example
-  }, []);
+  //Reading directories
+  const [files, setFiles] = useState([]);
+  const getFileContent = async (path) => {
+    const reader = await RNFS.readDir(path);
+    setFiles(reader);
+  };
 
   const pickSingleWithCamera = (cropping, mediaType = 'photo') => {
     ImagePicker.openCamera({
@@ -124,75 +116,62 @@ const ImagePixels = () => {
   }
 
   return (
-    <View style={{
-      alignSelf: 'center',
-      justifyContent: 'center',
+    <View style={[styles.container, {
       flexDirection: 'column',
-      }}>
-      <View style={{
-        flex: 3,
-
-      }}>
-      <View style={{
-          marginBottom: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
-      }}>
-        <Image
+    }]}>
+      <View style={{ flex: 2, backgroundColor: '#F2F3F4' }}>
+      <View style={{ flexDirection: 'row', alignSelf: 'center', margin: 8 }}>
+      <Image
         source={image}
         style={{
-          width: 150,
-          height: 150,
+          width: 130,
+          height: 130,
+          borderRadius: 20,
+
+        }}
+        />
+      <Image
+        source={image}
+        style={{
+          width: 130,
+          height: 130,
           borderRadius: 20,
         }}
         />
       </View>
-
-      <View style={{
-        marginBottom: 10,
-      }}>
-        <Text style={{
-          fontSize: 20,
-          backgroundColor: 'tomato',
-            padding: 10,
-          borderRadius: 20,
-            textAlign: 'center',
+      </View>
+      <View style={{ flex: 2, backgroundColor: '#D7DBDD'}}>
+        <View style={{ justifyContent: 'space-evenly', width: '50%', height: 40, alignSelf: 'center', flex: 1 }}>
+        <View >
+        <TouchableOpacity onPress={() => pickSingleWithCamera()} style={{backgroundColor: 'tomato', padding: 8, borderRadius: 12}}>
+          <Text style={{
+            fontSize: 12,
             textTransform: 'uppercase',
-          }}
-          onPress={() => pickSingleWithCamera()}>
-          clique
-        </Text>
-      </View>
-      <View>
+            textAlign: 'center',
+          }}>
+            take image
+          </Text>
+        </TouchableOpacity>
+        </View>
+        <View>
+        <TouchableOpacity onPress={() => pickSingleBase64()} style={{backgroundColor: 'tomato', padding: 8, borderRadius: 12}}>
         <Text style={{
-          fontSize: 20,
-          backgroundColor: 'tomato',
-            padding: 10,
-          borderRadius: 20,
-          textAlign: 'center',
-          textTransform: 'uppercase',
-          }}
-          onPress={() => pickSingleBase64()}>
-          take image
-        </Text>
+            fontSize: 12,
+            textTransform: 'uppercase',
+            textAlign: 'center',
+          }}>
+            choose image
+          </Text>
+        </TouchableOpacity>
+        </View>
+        </View>
       </View>
-      </View>
-      <View style={{
-        flex: 1,
-      }}>
-      <FlatList
-        data={files}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.name}
-      />
-      </View>
-      <View style={{
-        flex: 2,
-        paddingBottom: 10,
-      }}>
-      <Text>Downloads Folder: {downloadsFolder}</Text>
-      <Text>Documents folder: {documentsFolder}</Text>
-      <Text>External storage: {externalDirectory}</Text>
+      <View style={{ flex: 3, backgroundColor: '#D0D3D4' }}>
+        <FlatList
+          data={files}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.name}
+        />
       </View>
     </View>
   );
@@ -203,5 +182,7 @@ export default ImagePixels;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: start_width,
+    height: start_height,
   },
 });
