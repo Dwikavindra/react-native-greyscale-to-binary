@@ -27,11 +27,6 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         super(context);
     }
 
-    Bitmap bitmap;
-    Uri getPath;
-
-
-
     @NonNull
     @Override
     public String getName() {
@@ -47,7 +42,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);
+//        Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);
 
         if(!(imgFile==null)){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath() + "/assets/image.png");
@@ -75,9 +70,6 @@ public class PixelsImage extends ReactContextBaseJavaModule {
                     System.out.println("Calcule de avg " + pixelColor);
                     output.setPixel(x, y, pixelColor);
                 }
-//                myBitmap.recycle();
-//                myBitmap = null;
-//            System.out.println("les valeurs de Y sont " + y);
 
             }
         }
