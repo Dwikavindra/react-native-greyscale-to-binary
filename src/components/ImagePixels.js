@@ -93,7 +93,7 @@ const ImagePixels = () => {
       includeExif: true,
     })
       .then(image => {
-        let pathsDir = image.uri.split(/\r?\n/);
+        let pathsDir = image.path.split(/\r?\n/);
         console.log('received base64 image', pathsDir);
         setImage({
           uri: `data:${image.mime};base64,` + image.data,
