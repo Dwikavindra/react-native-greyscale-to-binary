@@ -311,3 +311,35 @@ container: {
 flex: 1,
 },
 });
+
+//OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/yourfilename");
+
+                fileOutputStream = getCurrentActivity().openFileOutput(String.valueOf(myBitmap), Context.MODE_PRIVATE);
+                fileOutputStream.write(myBitmap.getRowBytes());
+            System.out.println("Dataaaaaaaaaaaa 1 --------" + fileOutputStream);
+            fileOutputStream.close();
+            System.out.println("Dataaaaaaaaaaaa 2 --------" + output);
+
+// try {
+// imgFile = new File(Environment.getExternalStorageDirectory() + File.separator + "Output");
+// imgFile.createNewFile();
+//
+////Convert bitmap to byte array
+// ByteArrayOutputStream bos = new ByteArrayOutputStream();
+// bitmap.compress(Bitmap.CompressFormat.PNG, 0 , bos); // YOU can also save it in JPEG
+// byte[] bitmapdata = bos.toByteArray();
+//
+////write the bytes in file
+// FileOutputStream fos = new FileOutputStream(imgFile);
+// fos.write(bitmapdata);
+// fos.flush();
+// fos.close();
+//// return imgFile;
+// System.out.println("Dataaaaaaaaaaaa -- " + imgFile);
+// }catch (Exception e){
+// e.printStackTrace();
+// System.out.println("Dataaaaaaaaaaaa --1 " + imgFile);
+//// return imgFile; // it will return null
+// }
+// System.out.println("Dataaaaaaaaaaaa getC " + getCurrentActivity());
+// Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);

@@ -1,13 +1,10 @@
 package com.nativemodule;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Environment;
-import android.util.DisplayMetrics;
-import java.io.File;
-import java.io.EOFException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,11 +13,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.lang.reflect.Array;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class PixelsImage extends ReactContextBaseJavaModule {
     PixelsImage(ReactApplicationContext context) {
@@ -33,53 +29,82 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         return "PixelsImage";
     }
 
+    Bitmap myBitmap;
+    Bitmap output;
+    File imgFile;
+
     @ReactMethod
     private Bitmap createBinaryPixels(String url ) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(url, options);
+        Bitmap test =  BitmapFactory.decodeFile(url, options);
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-//        Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);
+        imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
-        if(!(imgFile==null)){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath() + "/assets/image.png");
-            Bitmap output = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), myBitmap.getConfig());
-            int A, R, G, B;
-            int a, r, g, b;
-            int pixelColor;
-            int height = myBitmap.getHeight();
-            int width = myBitmap.getWidth();
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    pixelColor = myBitmap.getPixel(x, y);
+        try{
+            if(!(imgFile==null)){
+                myBitmap = BitmapFactory.decodeFile(imgFile.getPath() + "/assets/juhany.png");
+                output = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), myBitmap.getConfig());
+                int A, R, G, B;
+                int a, r, g, b;
+                int pixelColor;
+                int height = myBitmap.getHeight();
+                int width = myBitmap.getWidth();
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        pixelColor = myBitmap.getPixel(x, y);
 
-                    a = (pixelColor >> 24) & 0xff;
-                    r = (pixelColor >> 16) & 0xff;
-                    g = (pixelColor >> 8) & 0xff;
-                    b = pixelColor & 0xff;
+                        a = (pixelColor >> 24) & 0xff;
+                        r = (pixelColor >> 16) & 0xff;
+                        g = (pixelColor >> 8) & 0xff;
+                        b = pixelColor & 0xff;
 
-                    //calculate avg
-                     int avg = (r+g+b) / 3;
+                        //calculate avg
+                        int avg = (r+g+b) / 3;
 
-                    //replace pixels
-                    pixelColor = (a << 24) | (avg << 16) | (avg << 8) | avg;
+                        //replace pixels
+                        pixelColor = (a << 24) | (avg << 16) | (avg << 8) | avg;
 
-                    System.out.println("Calcule de avg " + pixelColor);
-                    output.setPixel(x, y, pixelColor);
+                        output.setPixel(x, y, pixelColor);
+
+
+                    }
                 }
-
             }
+            else {
+                System.out.println("my untraceable path ");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        else {
-//            myImage.setImageResource(R.drawable.ic_launcher_background);
-            System.out.println("mon chemin introuvable ");
-        }
-
-//        System.out.println("Dataaaaaaaaaaaa width " + bmOut);
-        return BitmapFactory.decodeFile(url, options);
-
+        bitmapToFile(output, "Output.png");
+        return test;
     }
+
+    public static File bitmapToFile(Bitmap bitmap, String fileNameToSave) { // File name like "image.png"
+        //create a file to write bitmap data
+        File file = null;
+        try {
+            file = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
+            file.createNewFile();
+
+            //Convert bitmap to byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0 , bos); // YOU can also save it in JPEG
+            byte[] bitmapdata = bos.toByteArray();
+
+            //write the bytes in file
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+            return file;
+        }catch (Exception e){
+            e.printStackTrace();
+            return file; // it will return null
+        }
+    }
+
 }
