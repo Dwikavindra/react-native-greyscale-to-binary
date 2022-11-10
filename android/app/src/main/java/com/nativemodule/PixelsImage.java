@@ -70,12 +70,12 @@ public class PixelsImage extends ReactContextBaseJavaModule {
                         pixelColor = (a << 24) | (grayAvg << 16) | (grayAvg << 8) | grayAvg;
 //                        output.setPixel(x, y, pixelColor);
 
-                        int avg = (int)(r * 0.3 + g * 0.59 + b *0.11);
-                        if(r < avg){
-                            output.setPixel(x, y, 0xFF000000);
+                        int avg = (int)(r * 0.3 + g * 0.6 + b *0.11);
+                        if(r > avg){
+                            output.setPixel(x, y, 0xFFFFFFFF);
 
                         }else{
-                            output.setPixel(x, y, 0xFFFFFFFF);
+                            output.setPixel(x, y, 0xFF000000);
                         }
 
                         //grayscale image out
