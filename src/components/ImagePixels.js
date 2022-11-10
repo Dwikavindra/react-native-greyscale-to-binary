@@ -14,6 +14,20 @@ const start_height = Dimensions.get('screen').height;
 const ImagePixels = () => {
   const [image, setImage] = useState(null);
   const [images, setImages] = useState(null);
+  const [newpath, setNewPath] = useState('');
+  const [name, setName] = useState('');
+  const [ext, setExt] = useState('');
+
+  //create new folder for grayScale images
+  const newFolderPath = RNFS.DownloadDirectoryPath + '/assets/grayscalemages';
+  const makeDirectory = async (newFolderPath) => {
+    await RNFS.mkdir(newFolderPath); //create a new folder on folderPath
+  };
+
+  useEffect(() => {
+    makeDirectory(newFolderPath); //execute this function on first mount
+    getFileContent(RNFS.DownloadDirectoryPath); //this function was defined in the previous example
+  }, [name]);
 
   //Getting file paths
   const [downloadsFolder, setDownloadsFolder] = useState('');
@@ -27,9 +41,19 @@ const ImagePixels = () => {
     setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     getFileContent(RNFS.DownloadDirectoryPath + '/assets'); //run the function on the first render.
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+    //let pathDir = RNFS.ExternalStorageDirectoryPath + '/Android/data/com.nativemodule/files/Pictures/';
+    let pathDir = RNFS.ExternalStorageDirectoryPath
+    ;
+    getFileContent(pathDir); //run the function on the first render.
+  }, [ext]);
+  useEffect(() => {
+    PixelsImage.createBinaryPixels(newpath, name, ext);
+  }, [newpath]);
 
   //this component will render our list item to the UI
   const Item = ({ name, isFile }) => {
@@ -60,30 +84,6 @@ const ImagePixels = () => {
     setFiles(reader);
   };
 
-  const pickSingleWithCamera = (cropping, mediaType = 'photo') => {
-    ImagePicker.openCamera({
-      cropping: cropping,
-      width: 500,
-      height: 500,
-      includeExif: true,
-      mediaType,
-    })
-      .then(image => {
-        let pathsDir = image.path.split(/\r?\n/);
-        console.log('received base64 image', pathsDir);
-        setImage({
-          uri: image.path,
-          width: image.width,
-          height: image.height,
-          mime: image.mime,
-          mime: image.data,
-        });
-        setImages(null);
-        PixelsImage.createBinaryPixels(image.path);
-      })
-      .catch(e => alert(e));
-  };
-
   const pickSingleBase64 = cropit => {
     ImagePicker.openPicker({
       width: 300,
@@ -93,15 +93,23 @@ const ImagePixels = () => {
       includeExif: true,
     })
       .then(image => {
-        let pathsDir = image.path.split(/\r?\n/);
-        console.log('received base64 image', pathsDir);
         setImage({
           uri: `data:${image.mime};base64,` + image.data,
-          width: image.width,
-          height: image.height,
         });
+        console.log('image selected-----fff-', image.path);
+        if (image.path.length != null){
+           newImg = image.path;
+          let uriArray = newImg.split('/0').pop();
+          let uriImgName = newImg.split('/');
+          let nameToChange = uriImgName[uriImgName.length - 1];
+          setName(nameToChange.split('.')[0]);
+          setExt(nameToChange.split('.')[1]);
+          setNewPath(uriArray);
+          console.log('relative path: ' + nameToChange.split('.')[0]);
+          console.log('split application: ' + uriArray);
+          console.log('split ext: ' + nameToChange.split('.')[1]);
+        }
         setImages(null);
-        PixelsImage.createBinaryPixels(image.path);
       })
       .catch(e => alert(e));
   };
@@ -111,7 +119,7 @@ const ImagePixels = () => {
   };
 
   function testFunction() {
-    PixelsImage.createBinaryPixels(image.path);
+    PixelsImage.createBinaryPixels(image);
     console.log('goooooooooodddddddd');
   }
 
@@ -120,16 +128,7 @@ const ImagePixels = () => {
       flexDirection: 'column',
     }]}>
       <View style={{ flex: 2, backgroundColor: '#F2F3F4' }}>
-      <View style={{ flexDirection: 'row', alignSelf: 'center', margin: 8 }}>
-      <Image
-        source={image}
-        style={{
-          width: 130,
-          height: 130,
-          borderRadius: 20,
-
-        }}
-        />
+      <View style={{ flexDirection: 'row', alignSelf: 'center', margin: 8, justifyContent: 'center' }}>
       <Image
         source={image}
         style={{
@@ -142,25 +141,14 @@ const ImagePixels = () => {
       </View>
       <View style={{ flex: 2, backgroundColor: '#D7DBDD'}}>
         <View style={{ justifyContent: 'space-evenly', width: '50%', height: 40, alignSelf: 'center', flex: 1 }}>
-        <View >
-        <TouchableOpacity onPress={() => pickSingleWithCamera()} style={{backgroundColor: 'tomato', padding: 8, borderRadius: 12}}>
-          <Text style={{
-            fontSize: 12,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-          }}>
-            take image
-          </Text>
-        </TouchableOpacity>
-        </View>
         <View>
-        <TouchableOpacity onPress={() => pickSingleBase64()} style={{backgroundColor: 'tomato', padding: 8, borderRadius: 12}}>
+        <TouchableOpacity onPress={() => pickSingleBase64()} style={{backgroundColor: 'tomato', padding: 10, borderRadius: 12}}>
         <Text style={{
             fontSize: 12,
             textTransform: 'uppercase',
             textAlign: 'center',
           }}>
-            choose image
+            choose a picture
           </Text>
         </TouchableOpacity>
         </View>

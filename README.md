@@ -343,3 +343,39 @@ flex: 1,
 // }
 // System.out.println("Dataaaaaaaaaaaa getC " + getCurrentActivity());
 // Bitmap IMG = BitmapFactory.decodeResource(this.getCurrentActivity().getResources(), R.drawable.image_attractive);
+<View >
+<TouchableOpacity onPress={() => pickSingleWithCamera()} style={{backgroundColor: 'tomato', padding: 8, borderRadius: 12}}>
+<Text style={{
+            fontSize: 12,
+            textTransform: 'uppercase',
+            textAlign: 'center',
+          }}>
+take image
+</Text>
+</TouchableOpacity>
+</View>
+
+const pickSingleWithCamera = (cropping, mediaType = 'photo') => {
+ImagePicker.openCamera({
+cropping: cropping,
+width: 500,
+height: 500,
+includeExif: true,
+mediaType,
+})
+.then(image => {
+let pathsDir = image.path.split(/\r?\n/);
+console.log('received base64 image', pathsDir);
+setImage({
+uri: image.path,
+width: image.width,
+height: image.height,
+mime: image.mime,
+mime: image.data,
+});
+setImages(null);
+PixelsImage.createBinaryPixels(image.path);
+})
+.catch(e => alert(e));
+};
+let pathsDir = image.path.split(/\r?\n/);

@@ -34,18 +34,18 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     File imgFile;
 
     @ReactMethod
-    private Bitmap createBinaryPixels(String url ) {
+    private Bitmap createBinaryPixels(String url, String name, String ext ) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         Bitmap test =  BitmapFactory.decodeFile(url, options);
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        imgFile = Environment.getExternalStoragePublicDirectory(url);
 
         try{
-            if(!(imgFile==null)){
-                myBitmap = BitmapFactory.decodeFile(imgFile.getPath() + "/assets/juhany.png");
+            if(!(url==null)){
+                myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
                 output = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), myBitmap.getConfig());
                 int A, R, G, B;
                 int a, r, g, b;
@@ -79,7 +79,10 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         }catch (Exception e){
             e.printStackTrace();
         }
-        bitmapToFile(output, "Output.png");
+        System.out.println("Dataaaaaaaaaaaa --900 " + ext);
+        System.out.println("Dataaaaaaaaaaaa --my " + myBitmap);
+        System.out.println("Dataaaaaaaaaaaa --URL " + name);
+        bitmapToFile(output, name + '.' + ext);
         return test;
     }
 
@@ -87,6 +90,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         //create a file to write bitmap data
         File file = null;
         try {
+
             file = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
             file.createNewFile();
 
@@ -98,6 +102,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
             //write the bytes in file
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(bitmapdata);
+            System.out.println("new filllllllllle " + file);
             fos.flush();
             fos.close();
             return file;
