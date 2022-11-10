@@ -152,9 +152,30 @@ const ImagePixels = () => {
           </Text>
         </TouchableOpacity>
         </View>
+        <View>
+          <Text style={{
+            fontSize: 13,
+            fontStyle: 'normal',
+            fontWeight: '500',
+            textTransform: 'capitalize',
+            //textAlign: 'justify',
+          }}>
+          after the image is displayed you can find it in the current directory of your device
+          </Text>
+        </View>
         </View>
       </View>
       <View style={{ flex: 3, backgroundColor: '#D0D3D4' }}>
+      <Text style={{
+          fontSize: 18,
+          fontStyle: 'normal',
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}>
+          list of files
+        </Text>
         <FlatList
           data={files}
           renderItem={renderItem}

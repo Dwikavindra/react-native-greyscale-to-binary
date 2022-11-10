@@ -4,6 +4,7 @@ import static android.app.PendingIntent.getActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
 
@@ -61,14 +62,24 @@ public class PixelsImage extends ReactContextBaseJavaModule {
                         g = (pixelColor >> 8) & 0xff;
                         b = pixelColor & 0xff;
 
+                        //get grayscale value
                         //calculate avg
-                        int avg = (r+g+b) / 3;
+                        int grayAvg = (r+g+b)/3;
 
                         //replace pixels
-                        pixelColor = (a << 24) | (avg << 16) | (avg << 8) | avg;
+                        pixelColor = (a << 24) | (grayAvg << 16) | (grayAvg << 8) | grayAvg;
+//                        output.setPixel(x, y, pixelColor);
 
-                        output.setPixel(x, y, pixelColor);
+                        int avg = (int)(r * 0.3 + g * 0.59 + b *0.11);
+                        if(r < avg){
+                            output.setPixel(x, y, 0xFF000000);
 
+                        }else{
+                            output.setPixel(x, y, 0xFFFFFFFF);
+                        }
+
+                        //grayscale image out
+//                        output.setPixel(x, y, pixelColor);
 
                     }
                 }
@@ -102,7 +113,6 @@ public class PixelsImage extends ReactContextBaseJavaModule {
             //write the bytes in file
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(bitmapdata);
-            System.out.println("new filllllllllle " + file);
             fos.flush();
             fos.close();
             return file;
