@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 /* eslint-disable no-dupe-keys */
-import {View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import {View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, LogBox} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import PixelsImage from '../../PixelsImage';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -27,6 +27,7 @@ const ImagePixels = () => {
   useEffect(() => {
     makeDirectory(newFolderPath); //execute this function on first mount
     getFileContent(RNFS.DownloadDirectoryPath); //this function was defined in the previous example
+    LogBox.ignoreAllLogs(['Error: Attempt to get length of null array', 'WARN  Debugger and device times have drifted by more than 60s. Please correct this by running adb shell " `date +%m%d%H%M%Y.%S`']);
   }, [name]);
 
   //Getting file paths
@@ -70,9 +71,21 @@ const ImagePixels = () => {
       <View style={{
         padding: 10,
       }}>
-        <Text style={styles.title}>{index}</Text>
-        {/* The isFile method indicates whether the scanned content is a file or a folder*/}
-        <Item name={item.name} isFile={item.isFile()} />
+        {
+          files.length == null ?
+          <>
+          <Text>
+            file not found
+          </Text>
+          </>
+          :
+          <>
+          <Text style={styles.title}>{index}</Text><Item name={item.name} isFile={item.isFile()} />
+          </>
+
+
+        }
+
       </View>
     );
   };

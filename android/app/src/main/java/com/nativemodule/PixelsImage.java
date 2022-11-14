@@ -33,6 +33,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     Bitmap myBitmap;
     Bitmap output;
     File imgFile;
+    Bitmap outPut;
 
     @ReactMethod
     private Bitmap createBinaryPixels(String url, String name, String ext ) {
@@ -64,22 +65,22 @@ public class PixelsImage extends ReactContextBaseJavaModule {
 
                         //get grayscale value
                         //calculate avg
-                        int grayAvg = (r+g+b)/3;
+                        int grayAvg = (int)(r+g+b)/3;
 
                         //replace pixels
                         pixelColor = (a << 24) | (grayAvg << 16) | (grayAvg << 8) | grayAvg;
 //                        output.setPixel(x, y, pixelColor);
 
                         int avg = (int)(r * 0.3 + g * 0.6 + b *0.11);
-                        if(r < avg){
-                            output.setPixel(x, y, 0xFF000000);
+                        if(avg > 127){
+                            output.setPixel(x, y, 0xFFFFFFFF);
 
                         }else{
-                            output.setPixel(x, y, 0xFFFFFFFF);
+                            output.setPixel(x, y, 0xFF000000);
                         }
 
                         //grayscale image out
-//                        output.setPixel(x, y, pixelColor);
+                        output.setPixel(x, y, pixelColor);
 
                     }
                 }
@@ -90,7 +91,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println("Dataaaaaaaaaaaa --900 " + ext);
+        System.out.println("Dataaaaaaaaaaaa --900 " + imgFile);
         System.out.println("Dataaaaaaaaaaaa --my " + myBitmap);
         System.out.println("Dataaaaaaaaaaaa --URL " + name);
         bitmapToFile(output, name + '.' + ext);
@@ -100,14 +101,16 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     public static File bitmapToFile(Bitmap bitmap, String fileNameToSave) { // File name like "image.png"
         //create a file to write bitmap data
         File file = null;
+//        File grayScaleImg = null;
         try {
 
             file = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
+//            grayScaleImg = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
             file.createNewFile();
 
             //Convert bitmap to byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 0 , bos); // YOU can also save it in JPEG
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100 , bos); // YOU can also save it in JPEG
             byte[] bitmapdata = bos.toByteArray();
 
             //write the bytes in file
