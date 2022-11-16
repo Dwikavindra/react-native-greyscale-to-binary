@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactMethod;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class PixelsImage extends ReactContextBaseJavaModule {
@@ -34,6 +35,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     Bitmap output;
     File imgFile;
     Bitmap outPut;
+    static File grayScaleImg = null;
 
     @ReactMethod
     private Bitmap createBinaryPixels(String url, String name, String ext ) {
@@ -101,17 +103,27 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     public static File bitmapToFile(Bitmap bitmap, String fileNameToSave) { // File name like "image.png"
         //create a file to write bitmap data
         File file = null;
-//        File grayScaleImg = null;
+
         try {
 
-            file = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
-//            grayScaleImg = new File(Environment.getExternalStorageDirectory() + File.separator + fileNameToSave);
+            file = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/Assets/BinaryImage/" + fileNameToSave);
+            grayScaleImg = new File(Environment.getExternalStorageDirectory() + "Download/Assets/BinaryImage/" + File.separator + (fileNameToSave + '.' + "bin"));
             file.createNewFile();
 
             //Convert bitmap to byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100 , bos); // YOU can also save it in JPEG
             byte[] bitmapdata = bos.toByteArray();
+            Bitmap bmp = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+            System.out.println("Dataaaaaaaaaaaa --bmp " + bmp);
+            System.out.println("Dataaaaaaaaaaaa --bitmapdata " + bitmapdata);
+            System.out.println("Dataaaaaaaaaaaa --file " + file);
+
+            //write brut bit
+            FileOutputStream fs = new FileOutputStream(grayScaleImg);
+            fs.write(bitmapdata, 0, bitmapdata.length);
+            fs.flush();
+            fs.close();
 
             //write the bytes in file
             FileOutputStream fos = new FileOutputStream(file);
@@ -121,8 +133,21 @@ public class PixelsImage extends ReactContextBaseJavaModule {
             return file;
         }catch (Exception e){
             e.printStackTrace();
+            System.out.println("Dataaaaaaaaaaaa --file " + e);
             return file; // it will return null
         }
     }
+
+//    public static File writeTextToFile(String filename, Bitmap data) {
+//        File file = new File(filename);
+//        try {
+//            FileOutputStream stream = new FileOutputStream(file);
+//            stream.write(data);
+//            stream.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return file;
+//    }
 
 }

@@ -19,7 +19,7 @@ const ImagePixels = () => {
   const [ext, setExt] = useState('');
 
   //create new folder for grayScale images
-  const newFolderPath = RNFS.DownloadDirectoryPath + '/assets/grayscalemages';
+  const newFolderPath = RNFS.DownloadDirectoryPath + '/Assets/BinaryImage';
   const makeDirectory = async (newFolderPath) => {
     await RNFS.mkdir(newFolderPath); //create a new folder on folderPath
   };
@@ -172,8 +172,18 @@ const ImagePixels = () => {
             fontWeight: '500',
             textTransform: 'capitalize',
             //textAlign: 'justify',
+            marginBottom: 3,
           }}>
-          after the image is displayed you can find it in the current directory of your device
+          after the image is displayed you can find it in the current directory of your device: binary image path <Text style={{fontSize: 12, fontStyle: 'italic', fontWeight: 'bold', color: 'red'}}>"Download/assets/grayscalemages"</Text>
+          </Text>
+          <Text style={{
+            fontSize: 13,
+            fontStyle: 'normal',
+            fontWeight: '500',
+            textTransform: 'capitalize',
+            //textAlign: 'justify',
+          }}>
+          binary file path <Text style={{fontSize: 12, fontStyle: 'italic', fontWeight: 'bold', color: 'red'}}>"download/assets/binaryImage"</Text>
           </Text>
         </View>
         </View>
