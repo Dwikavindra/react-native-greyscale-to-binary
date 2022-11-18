@@ -96,18 +96,18 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         System.out.println("Dataaaaaaaaaaaa --900 " + imgFile);
         System.out.println("Dataaaaaaaaaaaa --my " + myBitmap);
         System.out.println("Dataaaaaaaaaaaa --URL " + name);
-        bitmapToFile(output, name + '.' + ext);
+        bitmapToFile(output, name + '.' + ext, name);
         return test;
     }
 
-    public static File bitmapToFile(Bitmap bitmap, String fileNameToSave) { // File name like "image.png"
+    public static File bitmapToFile(Bitmap bitmap, String fileNameToSave, String name) { // File name like "image.png"
         //create a file to write bitmap data
         File file = null;
 
         try {
 
             file = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/Assets/BinaryImage/" + fileNameToSave);
-            grayScaleImg = new File(Environment.getExternalStorageDirectory() + "Download/Assets/BinaryImage/" + File.separator + (fileNameToSave + '.' + "bin"));
+            grayScaleImg = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/Assets/BinaryImage/" + (name + '.' + "bin"));
             file.createNewFile();
 
             //Convert bitmap to byte array
@@ -137,17 +137,5 @@ public class PixelsImage extends ReactContextBaseJavaModule {
             return file; // it will return null
         }
     }
-
-//    public static File writeTextToFile(String filename, Bitmap data) {
-//        File file = new File(filename);
-//        try {
-//            FileOutputStream stream = new FileOutputStream(file);
-//            stream.write(data);
-//            stream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return file;
-//    }
 
 }
