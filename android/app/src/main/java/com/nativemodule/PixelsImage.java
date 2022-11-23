@@ -4,12 +4,18 @@ import static android.app.PendingIntent.getActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -32,110 +38,44 @@ public class PixelsImage extends ReactContextBaseJavaModule {
     }
 
     Bitmap myBitmap;
-    Bitmap output;
     File imgFile;
     Bitmap outPut;
     static File grayScaleImg = null;
 
     @ReactMethod
-    private Bitmap createBinaryPixels(String url, String name, String ext ) {
+    private void createBinaryPixels(String url, Integer width, Integer height, Callback callback) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap test =  BitmapFactory.decodeFile(url, options);
+        byte[] code = Base64.decode(url, Base64.DEFAULT);
+        Bitmap test = BitmapFactory.decodeByteArray(code, 0, code.length);
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bmp_Copy = test.copy(Bitmap.Config.ARGB_8888,true);
+        System.out.println("Helllo from Sys out");
 
-        imgFile = Environment.getExternalStoragePublicDirectory(url);
 
-        try{
-            if(!(url==null)){
-                myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
-                output = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), myBitmap.getConfig());
-                int A, R, G, B;
-                int a, r, g, b;
-                int pixelColor;
-                int height = myBitmap.getHeight();
-                int width = myBitmap.getWidth();
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        pixelColor = myBitmap.getPixel(x, y);
-
-                        a = (pixelColor >> 24) & 0xff;
-                        r = (pixelColor >> 16) & 0xff;
-                        g = (pixelColor >> 8) & 0xff;
-                        b = pixelColor & 0xff;
-
-                        //get grayscale value
-                        //calculate avg
-                        int grayAvg = (int)(r+g+b)/3;
-
-                        //replace pixels
-                        pixelColor = (a << 24) | (grayAvg << 16) | (grayAvg << 8) | grayAvg;
-//                        output.setPixel(x, y, pixelColor);
-
-                        int avg = (int)(r * 0.3 + g * 0.6 + b *0.11);
-                        if(avg > 127){
-                            output.setPixel(x, y, 0xFFFFFFFF);
-
-                        }else{
-                            output.setPixel(x, y, 0xFF000000);
-                        }
-
-                        //grayscale image out
-                        output.setPixel(x, y, pixelColor);
-
-                    }
-                }
+        Log.d("PixelImageModule", "Helllo  ");
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                // get one pixel color
+                int pixel = test.getPixel(x, y);
+                // retrieve color of all channels
+                int A = Color.alpha(pixel);
+                int R = Color.red(pixel);
+                int G = Color.green(pixel);
+                int B = Color.blue(pixel);
+                // take conversion up to one single value
+                R = G = B = (int) (0.299 * R + 0.587 * G + 0.114 * B);
+                // set new pixel color to output bitmap
+                bmp_Copy.setPixel(x,y,Color.argb(A, R, G, B));
+                System.out.println("Helllo from loop");
             }
-            else {
-                System.out.println("my untraceable path ");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
         }
-        System.out.println("Dataaaaaaaaaaaa --900 " + imgFile);
-        System.out.println("Dataaaaaaaaaaaa --my " + myBitmap);
-        System.out.println("Dataaaaaaaaaaaa --URL " + name);
-        bitmapToFile(output, name + '.' + ext, name);
-        return test;
-    }
-
-    public static File bitmapToFile(Bitmap bitmap, String fileNameToSave, String name) { // File name like "image.png"
-        //create a file to write bitmap data
-        File file = null;
-
-        try {
-
-            file = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/Assets/BinaryImage/" + fileNameToSave);
-            grayScaleImg = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/Assets/BinaryImage/" + (name + '.' + "bin"));
-            file.createNewFile();
-
-            //Convert bitmap to byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100 , bos); // YOU can also save it in JPEG
-            byte[] bitmapdata = bos.toByteArray();
-            Bitmap bmp = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
-            System.out.println("Dataaaaaaaaaaaa --bmp " + bmp);
-            System.out.println("Dataaaaaaaaaaaa --bitmapdata " + bitmapdata);
-            System.out.println("Dataaaaaaaaaaaa --file " + file);
-
-            //write brut bit
-            FileOutputStream fs = new FileOutputStream(grayScaleImg);
-            fs.write(bitmapdata, 0, bitmapdata.length);
-            fs.flush();
-            fs.close();
-
-            //write the bytes in file
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(bitmapdata);
-            fos.flush();
-            fos.close();
-            return file;
-        }catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Dataaaaaaaaaaaa --file " + e);
-            return file; // it will return null
-        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bmp_Copy.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        callback.invoke(encoded);
     }
 
 }
