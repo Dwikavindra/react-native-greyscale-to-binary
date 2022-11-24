@@ -17,6 +17,8 @@ import PixelsImage from '../../PixelsImage';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
 
+import {Buffer} from 'buffer';
+
 const start_width = Dimensions.get('screen').width;
 const start_height = Dimensions.get('screen').height;
 
@@ -136,8 +138,29 @@ const ImagePixels = () => {
             image.height,
             encoded => {
               console.log(`Encoded is${encoded}`);
+              const image2 = `data:image/jpeg;base64,` + encoded;
               setImage2({
-                uri: `data:image/jpeg;base64,` + encoded,
+                uri: image2,
+              });
+              const path1 = RNFS.DownloadDirectoryPath + '/base64.txt';
+              console.log(`Binary String is ${image2}`);
+              RNFS.writeFile(path1, image2, 'utf8')
+                .then(success => {
+                  console.log('FILE WRITTEN!');
+                })
+                .catch(err => {
+                  console.log(err.message);
+                });
+              PixelsImage.base64tobinaryString(image2, binaryStr => {
+                const path = RNFS.DownloadDirectoryPath + '/test.txt';
+                console.log(`Binary String is ${binaryStr}`);
+                RNFS.writeFile(path, binaryStr, 'utf8')
+                  .then(success => {
+                    console.log('FILE WRITTEN!');
+                  })
+                  .catch(err => {
+                    console.log(err.message);
+                  });
               });
             },
           );

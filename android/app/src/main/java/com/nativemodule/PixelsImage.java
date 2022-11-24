@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 
 public class PixelsImage extends ReactContextBaseJavaModule {
     PixelsImage(ReactApplicationContext context) {
@@ -51,10 +52,6 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bmp_Copy = test.copy(Bitmap.Config.ARGB_8888,true);
-        System.out.println("Helllo from Sys out");
-
-
-        Log.d("PixelImageModule", "Helllo  ");
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 // get one pixel color
@@ -68,7 +65,7 @@ public class PixelsImage extends ReactContextBaseJavaModule {
                 R = G = B = (int) (0.299 * R + 0.587 * G + 0.114 * B);
                 // set new pixel color to output bitmap
                 bmp_Copy.setPixel(x,y,Color.argb(A, R, G, B));
-                System.out.println("Helllo from loop");
+
             }
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -76,6 +73,12 @@ public class PixelsImage extends ReactContextBaseJavaModule {
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
         callback.invoke(encoded);
+    }
+    @ReactMethod
+    private void base64tobinaryString(String base64,Callback callback){
+        byte[] decode = Base64.decode(base64,Base64.DEFAULT);
+        String binaryStr = new BigInteger(1, decode).toString(2);
+        callback.invoke(binaryStr);
     }
 
 }
