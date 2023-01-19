@@ -1,4 +1,5 @@
 package com.nativemodule;
+import com.dwikavindraharyoradithya.reactnativebase64grayscale.RNBase64GrayscaleModule;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -20,7 +21,7 @@ public class MyMainPackage implements ReactPackage {
             ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new PixelsImage(reactContext));
+        modules.add(new RNBase64GrayscaleModule(reactContext));
 
         return modules;
     }

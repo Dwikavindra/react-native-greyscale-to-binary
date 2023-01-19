@@ -5,6 +5,6 @@
 * 1. String name: A string representing the name of the event
 * 2. String location: A string representing the location of the event
 */
-import { NativeModules } from 'react-native';
-const { PixelsImage } = NativeModules;
-export default PixelsImage;
+import {NativeModules} from 'react-native';
+const {RNBase64GrayscaleModule} = NativeModules;
+export default RNBase64GrayscaleModule;
