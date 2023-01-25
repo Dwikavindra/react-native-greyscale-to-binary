@@ -88,6 +88,7 @@ class RNBase64GrayscaleModule(reactContext: ReactApplicationContext) : ReactCont
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    @ReactMethod
     private fun base64GrayscaletoArrayofPixels(base64: String, promise:Promise) {
         try{
             val code = Base64.decode(base64, Base64.DEFAULT)
@@ -104,8 +105,8 @@ class RNBase64GrayscaleModule(reactContext: ReactApplicationContext) : ReactCont
                     var G= Color.green(pixel)
                     var R = Color.red(pixel)
                     var B = Color.blue(pixel)
-                    var finalInt= Color.argb(A,R,G,B)
-                    pixels.pushInt(finalInt)
+//                    var finalInt= Color.argb(A,R,G,B)
+                    pixels.pushInt(G)
                 }
 
             }

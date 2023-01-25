@@ -12,10 +12,12 @@ const App = () => {
     const binaryImage = async () => {
       try {
         const result =
-          await RNBase64GrayscaleModule.base64GrayscaletobinaryImage(image);
-        const path =
-          RNFS.ExternalStorageDirectoryPath + '/Documents/processed4.txt';
-        await RNFS.writeFile(path, result, 'utf8');
+          await RNBase64GrayscaleModule.base64GrayscaletoArrayofPixels(image);
+        console.log(result);
+        //   await RNBase64GrayscaleModule.base64GrayscaletobinaryImage(image);
+        // const path =
+        //   RNFS.ExternalStorageDirectoryPath + '/acuments/processed4.txt';
+        // await RNFS.writeFile(path, result, 'utf8');
       } catch (error) {
         console.log(error);
       }
